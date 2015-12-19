@@ -7,8 +7,18 @@ var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var walks = require('./routes/walks');
+
+var mongoose = require ('mongoose');
 
 var app = express();
+
+// var fileSystem = require('fs');
+//load all files in model folder
+// fileSystem.readdirSync(__dirname + '/models').forEach(function(filename){
+//   if(!filename.indexOf('.js'))
+//     require(__dirname + '/models/' + filename);
+// });
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -24,6 +34,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/users', users);
+app.use('/walks', walks);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -44,7 +55,9 @@ if (app.get('env') === 'development') {
       error: err
     });
   });
+  mongoose.connect('mongodb://localhost/test');
 }
+
 
 // production error handler
 // no stacktraces leaked to user
@@ -55,6 +68,5 @@ app.use(function(err, req, res, next) {
     error: {}
   });
 });
-
 
 module.exports = app;
