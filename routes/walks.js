@@ -11,7 +11,7 @@ var errorMsg = function(err){
 router.get('/', function(req, res){
   Walk.find().sort({createdAt: -1}).exec(function(err, walks){
     if(err) return errorMsg(err);
-    res.send(walks).status(200);
+    return res.send(walks).status(200);
   });
 });
 
@@ -20,8 +20,7 @@ router.get('/:_id', function(req, res){
   Walk.findById(req.params._id, function(err, walk){
     if(err) return errorMsg(err);
     console.log(walk);
-
-    res.send(walk).status(200);
+    return res.send(walk).status(200);
   });
 });
 
@@ -35,9 +34,8 @@ router.post('/', function (req, res, next) {
 
   walk.save(function(err, walk){
     if(err) return errorMsg(err);
-    res.send(walk).status(200);
+    return res.send(walk).status(200);
   });
-
 });
 
 router.put('/', function(req, res, next){
@@ -53,13 +51,16 @@ router.put('/', function(req, res, next){
     walk.save(function(err, walk){
       if(err) return errorMsg(err);
       console.log(walk);
-      res.send(walk).status(200);
+      return res.send(walk).status(200);
     });
   });
 });
 
-router.delete('/', function(req,res,next){
-  res.sendStatus(200);
+router.delete('/:_id', function(req,res,next){
+  Walk.findByIdAndRemove(req.params._id, function(err){
+    if(err) return errorMsg(err);
+    return res.sendStatus(200);
+  });
 });
 
 module.exports = router;
