@@ -10,7 +10,7 @@ var errorMsg = function(err){
 
 router.get('/', function(req, res){
   Walk.find().sort({createdAt: -1}).exec(function(err, walks){
-    if(err) return errorMsg(err);
+    if(err) errorMsg(err);
     return res.send(walks).status(200);
   });
 });
@@ -18,7 +18,7 @@ router.get('/', function(req, res){
 router.get('/:_id', function(req, res){
   console.log(req.params);
   Walk.findById(req.params._id, function(err, walk){
-    if(err) return errorMsg(err);
+    if(err) errorMsg(err);
     console.log(walk);
     return res.send(walk).status(200);
   });
@@ -33,14 +33,14 @@ router.post('/', function (req, res, next) {
   walk.waypoints = req.body.waypoints;
 
   walk.save(function(err, walk){
-    if(err) return errorMsg(err);
+    if(err) errorMsg(err);
     return res.send(walk).status(200);
   });
 });
 
 router.put('/', function(req, res, next){
   Walk.findById(req.body._id, function(err, walk){
-    if(err) return errorMsg(err);
+    if(err) errorMsg(err);
 
     walk.description = req.body.description;
     walk.createdAt = req.body.createdAt;
@@ -49,7 +49,7 @@ router.put('/', function(req, res, next){
     walk.waypoints = req.body.waypoints;
 
     walk.save(function(err, walk){
-      if(err) return errorMsg(err);
+      if(err) errorMsg(err);
       console.log(walk);
       return res.send(walk).status(200);
     });
@@ -58,7 +58,7 @@ router.put('/', function(req, res, next){
 
 router.delete('/:_id', function(req,res,next){
   Walk.findByIdAndRemove(req.params._id, function(err){
-    if(err) return errorMsg(err);
+    if(err) errorMsg(err);
     return res.sendStatus(200);
   });
 });
