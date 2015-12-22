@@ -58,7 +58,7 @@ if (app.get('env') === 'development') {
   mongoose.connect('mongodb://localhost/test');
 }
 
-mongoose.connect('mongodb://dbruce1990@gmail.com:snapple1231q2w3e4r5t@ds035485.mongolab.com:35485/heroku_8xb6vq0w');
+mongoose.connect('mongodb://admin:m0ngol4bs@ds035485.mongolab.com:35485/heroku_8xb6vq0w');
 
 // production error handler
 // no stacktraces leaked to user
