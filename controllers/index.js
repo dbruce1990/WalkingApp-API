@@ -1,5 +1,5 @@
 var User = require('../models/user.js');
-var errorHandler = require('../handlers/databaseError');
+var handleError = require('../handlers/error');
 var controller = {};
 
 controller.index = function(req, res, next) {
@@ -14,7 +14,7 @@ controller.signup = function(req, res){
 
   user.save(function(err, user){
     console.log(err.code);
-    if(err) errorHandler(res, err);
+    if(err) handleError(res, err);
     return res.send(user);
   });
 };
