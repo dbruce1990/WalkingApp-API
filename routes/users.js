@@ -20,16 +20,5 @@ router.get('/', function(req, res){
   });
 });
 
-router.post('/signup', function(req, res){
-  console.log(req.body);
-  var user = new User();
-  user.username = req.body.username;
-  user.password = user.generateHash(req.body.password);
-
-  user.save(function(err, user){
-    if(err) return errorMsg(err);
-    return res.send(user);
-  });
-});
 
 module.exports = router;

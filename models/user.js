@@ -20,6 +20,6 @@ User.methods.generateHash = function(pass){
   return bcrypt.hashSync(pass, bcrypt.genSaltSync(10));
 }
 User.methods.validatePassword = function(pass){
-  return bcrypt.compareSync(pass, this.local.password);
+  return bcrypt.compareSync(pass, this.password);
 }
 module.exports = mongoose.model('User', User);
