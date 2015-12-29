@@ -1,8 +1,0 @@
-{
-  "name": "bcrypt",
-  "version": "1.0.0",
-  "main": "./bcrypt.js",
-  "dependencies": {
-    "angular": ">=1.0.8"
-  }
-}

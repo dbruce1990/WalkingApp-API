@@ -1,4 +1,4 @@
-var mongoose = require('mongoose');
+var Walk = require('../models/user.js');
 var handleError = require('../handlers/error');
 var controller = {};
 
