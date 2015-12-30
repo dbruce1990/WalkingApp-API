@@ -6,11 +6,11 @@ module.exports = function(app){
   var isAuthenticated = function(req, res, next){
     if(req.isAuthenticated())
       next();
-    res.send('You must login first.').status(401);
+    res.status(401).send('You must login first.');
   };
 
   app.use('/', routes);
-  app.all('*', isAuthenticated);
+  app.all('/*', isAuthenticated);
   app.use('/users', users);
   app.use('/walks', walks);
 };

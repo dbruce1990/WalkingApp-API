@@ -1,4 +1,4 @@
-var Walk = require('../models/user.js');
+var Walk = require('../models/walk.js');
 var handleError = require('../handlers/error');
 var controller = {};
 
