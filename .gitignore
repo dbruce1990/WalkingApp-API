@@ -38,3 +38,6 @@ config/database.js
 
 #istanbul coverage report
 coverage
+
+#heroku procfile
+Procfile
