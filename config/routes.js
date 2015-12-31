@@ -10,7 +10,7 @@ module.exports = function(app){
   };
 
   app.use('/', routes);
-  app.all('/*', isAuthenticated);
+  app.all('*', isAuthenticated);
   app.use('/users', users);
   app.use('/walks', walks);
 };

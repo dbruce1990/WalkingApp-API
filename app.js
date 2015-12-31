@@ -10,6 +10,8 @@ var bodyParser = require('body-parser');
 var mongoose = require ('mongoose');
 var passport = require('./config/passport')(app);
 
+var db_config = require('./config/database');
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -22,11 +24,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-
-//initialize connection to database
-var db = require('./config/database');
-mongoose.connect(db);
-
+//loads all routes
 var routes = require('./config/routes')(app);
 
 // catch 404 and forward to error handler
@@ -36,11 +34,15 @@ app.use(function(req, res, next) {
   next(err);
 });
 
+
 // error handlers
 
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
+  //initialize connection to database
+  mongoose.connect(db_config.development);
+
   app.use(function(err, req, res, next) {
     res.status(err.status || 500);
     res.render('error', {
@@ -50,14 +52,35 @@ if (app.get('env') === 'development') {
   });
 }
 
-// production error handler
-// no stacktraces leaked to user
-app.use(function(err, req, res, next) {
-  res.status(err.status || 500);
-  res.render('error', {
-    message: err.message,
-    error: {}
+// development error handler
+// will print stacktrace
+if (app.get('env') === 'test') {
+  //initialize connection to database
+  mongoose.connect(db_config.test);
+
+  app.use(function(err, req, res, next) {
+    res.status(err.status || 500);
+    res.render('error', {
+      message: err.message,
+      error: err
+    });
   });
-});
+}
+
+if(app.get('env') === 'production'){
+  //initialize connection to database
+  mongoose.connect(db_config.production);
+
+  // production error handler
+  // no stacktraces leaked to user
+  app.use(function(err, req, res, next) {
+    res.status(err.status || 500);
+    res.render('error', {
+      message: err.message,
+      error: {}
+    });
+  });
+}
+
 
 module.exports = app;

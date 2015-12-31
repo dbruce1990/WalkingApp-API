@@ -22,4 +22,11 @@ User.methods.generateHash = function(pass){
 User.methods.validatePassword = function(pass){
   return bcrypt.compareSync(pass, this.password);
 }
+
+User.pre('save', function(next){
+  if(this.isModified('password'))
+    this.password = this.generateHash(this.password);
+
+  next();
+});
 module.exports = mongoose.model('User', User);
