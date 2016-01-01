@@ -1,12 +1,28 @@
 require('../database_connection');
+var expect = require('chai').expect;
 var app = require('../../app');
 var agent = require('supertest').agent(app);
 var mongoose = require('mongoose');
 var Walk = require('../../models/walk');
 var User = require('../../models/user');
 var request = require('request');
-describe('Walks Routes Authorized', function(){
-  before(function(done){
+var mocha = this;
+
+describe.only('Walks Routes Authorized', function(){
+  it('should return a user', function(done){
+    User.findOne({_id: mocha.user._id}, function(err, user){
+      if(err) done(err);
+
+      expect(user).to.be.an('object');
+      expect(user.username).to.equal(mocha.user.username);
+      expect(user._id.toString).to.equal(mocha.user._id.toString);
+
+      done();
+    });
+  });
+
+  beforeEach(function(done){
+    //TODO Need to find out how to test this without creating a user and logging in first...
     //first need to create and login a user in, and create some walks
 
     //create temporary models
@@ -31,38 +47,22 @@ describe('Walks Routes Authorized', function(){
     walk1.waypoints = {};
     this.walk = walk1;
 
-    //TODO Need to find out how to test this without creating a user and logging in first...
     //create temporary user
-    var mocha = this;
     var userData = { username: 'bob', password: 'password123' };
     var user = new User(userData)
-      .save(function(err, user){
-        if(err) {
-          console.log(err);
-          done(err);
-        }
-        mocha.user = user;
-        // login temporary user
-        var options = {
-          url: 'http://localhost:3000/login',
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          json: userData
-        };
-        request(options, function(err, res, body){
-          console.log(body);
-          done();
-        });
-        // agent.post('/login').send(userData, done);
+    .save(function(err, user){
+      if(err) done(err);
+      mocha.user = user;
+      agent.post('/login').send(userData).end(function(err, res){
+        if(err) done(err);
+        done();
       });
+    });
   });
 
-  // it('should return a list of walks');
 });
 
-/* Unauthorized Requests */
+// /* Unauthorized Requests */
 describe('Walks Routes Unauthorized', function(){
 
   it('should return 401', function(done){
