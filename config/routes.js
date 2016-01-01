@@ -5,8 +5,8 @@ module.exports = function(app){
 
   var isAuthenticated = function(req, res, next){
     if(req.isAuthenticated())
-      next();
-    res.status(401).send('You must login first.');
+      return next();
+    return res.status(401).send('You must login first.');
   };
 
   app.use('/', routes);

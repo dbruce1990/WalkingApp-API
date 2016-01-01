@@ -6,6 +6,6 @@ router.get('/', controller.index);
 
 router.post('/signup', controller.signup);
 
-router.post('/login', passport.authorize('local'), controller.login);
+router.post('/login', passport.authenticate('local'), controller.login);
 
 module.exports = router;

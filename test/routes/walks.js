@@ -8,17 +8,14 @@ var User = require('../../models/user');
 var request = require('request');
 var mocha = this;
 
-describe.only('Walks Routes Authorized', function(){
-  it('should return a user', function(done){
-    User.findOne({_id: mocha.user._id}, function(err, user){
-      if(err) done(err);
-
-      expect(user).to.be.an('object');
-      expect(user.username).to.equal(mocha.user.username);
-      expect(user._id.toString).to.equal(mocha.user._id.toString);
-
-      done();
-    });
+describe('Walks Routes Authorized', function(){
+  it('should return all walks related to user', function(done){
+    agent.post('/login')
+      .send({username: 'bob', password: 'password123'})
+      .end(function(err, res){
+        if(err) done(err);
+        agent.get('/walks').expect(200).end(done);
+      });
   });
 
   beforeEach(function(done){
@@ -31,21 +28,25 @@ describe.only('Walks Routes Authorized', function(){
     walk1.elapsedTime = 10000;
     walk1.distance = 5000;
     walk1.waypoints = {};
-    this.walk = walk1;
+    mocha.walk1 = walk1;
 
     var walk2 = new Walk();
     walk1.description = 'description1';
     walk1.elapsedTime = 10000;
     walk1.distance = 5000;
     walk1.waypoints = {};
-    this.walk = walk1;
+    mocha.walk2 = walk2;
 
     var walk3 = new Walk();
     walk1.description = 'description1';
     walk1.elapsedTime = 10000;
     walk1.distance = 5000;
     walk1.waypoints = {};
-    this.walk = walk1;
+    mocha.walk3 = walk3;
+
+    mocha.walk1.save(function(err, walk){ if(err) done(err); });
+    mocha.walk2.save(function(err, walk){ if(err) done(err); });
+    mocha.walk3.save(function(err, walk){ if(err) done(err); });
 
     //create temporary user
     var userData = { username: 'bob', password: 'password123' };
@@ -55,26 +56,22 @@ describe.only('Walks Routes Authorized', function(){
       mocha.user = user;
       agent.post('/login').send(userData).end(function(err, res){
         if(err) done(err);
+        console.log(res.body);
         done();
       });
     });
-  });
-
+  })
 });
 
 // /* Unauthorized Requests */
 describe('Walks Routes Unauthorized', function(){
 
   it('should return 401', function(done){
-    agent
-    .get('/walks')
-    .expect(401, done);
+    agent.get('/walks').expect(401, done);
   });
 
   it('should return 401', function(done){
-    agent
-    .get('/walks/10987654321')
-    .expect(401, done);
+    agent .get('/walks/10987654321') .expect(401, done);
   });
 
   it('should return 401', function(done){
@@ -104,8 +101,6 @@ describe('Walks Routes Unauthorized', function(){
   });
 
   it('should return 401', function(done){
-    agent
-    .delete('/walks/10987654321')
-    .expect(401, done);
+    agent .delete('/walks/10987654321') .expect(401, done);
   });
 });
