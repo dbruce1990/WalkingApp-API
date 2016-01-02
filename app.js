@@ -7,7 +7,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-var db_config = require('./config/database');
+var database = require('../walkingapp-api-databaseconfig/database');
 var mongoose = require ('mongoose');
 
 // view engine setup
@@ -41,7 +41,7 @@ app.use(function(req, res, next) {
 // will print stacktrace
 if (app.get('env') === 'development') {
   //initialize connection to database
-  mongoose.connect(db_config.development);
+  mongoose.connect(database.development);
 
   app.use(function(err, req, res, next) {
     res.status(err.status || 500);
@@ -56,7 +56,7 @@ if (app.get('env') === 'development') {
 // will print stacktrace
 if (app.get('env') === 'test') {
   //initialize connection to database
-  mongoose.connect(db_config.test);
+  mongoose.connect(database.test);
 
   app.use(function(err, req, res, next) {
     res.status(err.status || 500);
@@ -69,7 +69,7 @@ if (app.get('env') === 'test') {
 
 if(app.get('env') === 'production'){
   //initialize connection to database
-  mongoose.connect(db_config.production);
+  mongoose.connect(database.production);
 
   // production error handler
   // no stacktraces leaked to user

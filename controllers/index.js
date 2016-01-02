@@ -6,6 +6,10 @@ controller.index = function(req, res, next) {
   return res.render('index', { title: 'Express' });
 };
 
+controller.render_signup = function(req, res){
+  return res.render('signup');
+};
+
 controller.signup = function(req, res){
   console.log(req.body);
   var user = new User();
@@ -21,6 +25,10 @@ controller.signup = function(req, res){
   });
 };
 
+
+controller.render_login = function(req, res){
+  return res.render('login');
+};
 controller.login = function(req, res){
   return res.send(req.user);
 };

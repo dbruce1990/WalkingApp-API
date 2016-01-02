@@ -5,7 +5,6 @@ var agent = require('supertest').agent(app);
 var mongoose = require('mongoose');
 var Walk = require('../../models/walk');
 var User = require('../../models/user');
-var request = require('request');
 var mocha = this;
 
 describe('Walks Routes Authorized', function(){

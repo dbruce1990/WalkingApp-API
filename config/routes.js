@@ -1,5 +1,5 @@
 module.exports = function(app){
-  var routes = require('../routes/index');
+  var index = require('../routes/index');
   var users = require('../routes/users');
   var walks = require('../routes/walks');
 
@@ -9,7 +9,7 @@ module.exports = function(app){
     return res.status(401).send('You must login first.');
   };
 
-  app.use('/', routes);
+  app.use('/', index);
   app.all('*', isAuthenticated);
   app.use('/users', users);
   app.use('/walks', walks);
