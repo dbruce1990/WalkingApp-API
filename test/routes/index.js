@@ -3,8 +3,6 @@ var User = require('../../models/user');
 var app = require('../../app');
 var should = require('should');
 var req = require('supertest')(app);
-<<<<<<< HEAD
-
 
 describe('Index', function(){
   describe('Views', function(){
@@ -20,22 +18,6 @@ describe('Index', function(){
 
     it('should return login page', function(done){
       req.get('/login')
-=======
-
-describe.only('Index Routes', function(){
-  it('should return 200', function(done){
-      req.get('/')
-        .expect(200, done);
-  });
-
-  it('should fail horribly', function(done){
-    req.get('/fail')
-      .expect(401, done);
-  });
-
-  it('should return login page', function(done){
-    req.get('/login')
->>>>>>> 10d96d986d9cf7a1125481a26db4f679ae2e2461
       .expect(200)
       .end(function(err, res){
         if(err) return done(err);
@@ -46,17 +28,10 @@ describe.only('Index Routes', function(){
         res.text.should.match(/name="submit"/);
         done();
       });
-<<<<<<< HEAD
     });
 
     it('should return signup page', function(done){
       req.get('/signup')
-=======
-  });
-
-  it('should return signup page', function(done){
-    req.get('/signup')
->>>>>>> 10d96d986d9cf7a1125481a26db4f679ae2e2461
       .expect(200)
       .end(function(err, res){
         if(err) return done(err);
@@ -66,7 +41,6 @@ describe.only('Index Routes', function(){
         res.text.should.match(/name="submit"/);
         done();
       });
-<<<<<<< HEAD
     });
   });
 
@@ -76,11 +50,11 @@ describe.only('Index Routes', function(){
     describe('Login', function(){
       beforeEach(function(done){
         var _this = this;
-        var data = {
+        _this.data = {
           username: "bob",
           password: "password123"
         };
-        var user = new User(data);
+        var user = new User(_this.data);
         user.save(function(err, user){
           if(err) return done(err);
           _this.user = user;
@@ -97,7 +71,8 @@ describe.only('Index Routes', function(){
           .expect(401, done);
       });
 
-      it('should login user', function(done){
+      it.only('should login user', function(done){
+        var _this = this;
         req.post('/login')
           .send(_this.data)
           .expect(200)
@@ -109,7 +84,5 @@ describe.only('Index Routes', function(){
       });
     });
 
-=======
->>>>>>> 10d96d986d9cf7a1125481a26db4f679ae2e2461
   });
 });
