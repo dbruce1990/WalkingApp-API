@@ -1,4 +1,4 @@
-require('../database_connection');
+require('../init_db_conn');
 var expect = require('chai').expect;
 var app = require('../../app');
 var agent = require('supertest').agent(app);
