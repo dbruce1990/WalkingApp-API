@@ -30,7 +30,7 @@ controller.render_login = function(req, res){
   return res.render('login');
 };
 controller.login = function(req, res){
-  return res.send(req.user);
+  return res.send({user: req.user });
 };
 
 module.exports = controller;
