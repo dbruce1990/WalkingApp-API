@@ -55,7 +55,6 @@ describe('Walks Routes Authorized', function(){
       mocha.user = user;
       agent.post('/login').send(userData).end(function(err, res){
         if(err) done(err);
-        console.log(res.body);
         done();
       });
     });
