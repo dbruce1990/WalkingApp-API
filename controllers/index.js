@@ -21,7 +21,7 @@ controller.signup = function(req, res){
       console.log(err.code);
       return handleError(res, err);
     }
-    return res.send(user);
+    return res.send({user: user});
   });
 };
 

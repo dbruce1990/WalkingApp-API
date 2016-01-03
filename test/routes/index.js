@@ -45,7 +45,48 @@ describe('Index', function(){
   });
 
   describe('Routes', function(){
-    describe('Signup', function(){});
+    describe('Signup', function(){
+      beforeEach(function(done){
+        this.data = {
+          username: 'bob',
+          password: 'password123'
+        };
+        done();
+      });
+
+      it('should signup a new user', function(done){
+        var _this = this;
+        req.post('/signup')
+          .send(this.data)
+          .expect(200)
+          .end(function(err, res){
+            if(err) return done(err);
+            User.findOne({_id: res.body.user._id}, function(err, user){
+              if(err) return done(err);
+              user.should.not.be.null();
+              user.username.should.equal(_this.data.username);
+              done();
+            });
+          });
+      });
+
+      it('should fail to signup a new user', function(done){
+        var _this = this;
+        var user = new User(_this.data);
+        user.save(function(err, user){
+          if(err) return done(err);
+          req.post('/signup')
+            .send(_this.data)
+            .expect(500)
+            .end(function(err, res){
+              if(err) return done(err);
+              res.body.success.should.equal(false);
+              res.body.message.should.equal('Duplicate found.');
+              done();
+            });
+        });
+      });
+    });
 
     describe('Login', function(){
       beforeEach(function(done){
@@ -71,7 +112,7 @@ describe('Index', function(){
           .expect(401, done);
       });
 
-      it.only('should login user', function(done){
+      it('should login user', function(done){
         var _this = this;
         req.post('/login')
           .send(_this.data)

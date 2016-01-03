@@ -1,8 +1,11 @@
 module.exports = function(res, err){
-    switch(err.code){
-      case 11000:
-              return res.send('Duplicate found.').status(500);
-      default:
-        return res.send('Something appears to have gone wrong.').status(500);
-    }
+  switch(err.code){
+    case 11000:
+      return res.status(500).send({
+        success: false,
+        message: 'Duplicate found.'
+      });
+    default:
+      return res.status(500).send('Something appears to have gone wrong.');
+  }
 };
