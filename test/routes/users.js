@@ -1,3 +1,4 @@
+require('../init_db_conn');
 var app = require('../../app');
 var agent = require('supertest').agent(app);
 

@@ -1,3 +1,6 @@
+/*
+  Must be included before app.js
+*/
 var db = require('../config/database').test;
 var mongoose = require('mongoose');
 
