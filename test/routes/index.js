@@ -70,7 +70,7 @@ describe('Index', function(){
           });
       });
 
-      it('should fail to signup a new user', function(done){
+      it('should fail due to duplicate credentials', function(done){
         var _this = this;
         var user = new User(_this.data);
         user.save(function(err, user){
@@ -86,6 +86,35 @@ describe('Index', function(){
             });
         });
       });
+
+      it('should fail due to missing username attribute', function(done){
+        var data = this.data;
+        data.username = "";
+        req.post('/signup')
+          .send(this.data)
+          .expect(500)
+          .end(function(err, res){
+            if(err) return done(err);
+            res.body.success.should.equal(false);
+            res.body.message.should.match(/Path `username` is required./);
+            done();
+          });
+      });
+
+      it('should fail due to missing password attribute', function(done){
+        var data = this.data;
+        data.password = "";
+        req.post('/signup')
+          .send(this.data)
+          .expect(500)
+          .end(function(err, res){
+            if(err) return done(err);
+            res.body.success.should.equal(false);
+            res.body.message.should.match(/Path `password` is required./);
+            done();
+          });
+      });
+
     });
 
     describe('Login', function(){

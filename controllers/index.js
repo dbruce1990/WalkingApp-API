@@ -11,14 +11,11 @@ controller.render_signup = function(req, res){
 };
 
 controller.signup = function(req, res){
-  console.log(req.body);
   var user = new User();
   user.username = req.body.username;
   user.password = req.body.password;
-
   user.save(function(err, user){
     if(err) {
-      console.log(err.code);
       return handleError(res, err);
     }
     return res.send({user: user});
