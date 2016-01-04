@@ -26,6 +26,7 @@ controller.signup = function(req, res){
 controller.render_login = function(req, res){
   return res.render('login');
 };
+
 controller.login = function(req, res){
   return res.send({user: req.user });
 };
