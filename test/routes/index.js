@@ -158,7 +158,7 @@ describe('Index', function(){
         });
       });
 
-      it.only('should fail to login user due to invalid username', function(done){
+      it('should fail due to invalid username', function(done){
         var data = {
           username: 'jane',
           password: 'password'
@@ -173,7 +173,7 @@ describe('Index', function(){
           });
       });
 
-      it('should fail to login user due to invalid password', function(done){
+      it('should fail user due to invalid password', function(done){
         var data = {
           username: 'bob',
           password: 'wrongPass'
