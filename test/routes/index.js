@@ -45,76 +45,100 @@ describe('Index', function(){
   });
 
   describe('Routes', function(){
-    describe('Signup', function(){
-      beforeEach(function(done){
-        this.data = {
+    describe.only('Signup', function(){
+
+      it('should successfuly signup a new user', function(done){
+        var data = {
           username: 'bob',
           password: 'password123'
         };
-        done();
-      });
-
-      it('should signup a new user', function(done){
-        var _this = this;
         req.post('/signup')
-          .send(this.data)
+          .send(data)
           .expect(200)
           .end(function(err, res){
             if(err) return done(err);
             User.findOne({_id: res.body.user._id}, function(err, user){
               if(err) return done(err);
               user.should.not.be.null();
-              user.username.should.equal(_this.data.username);
+              user.username.should.equal(data.username);
               done();
             });
           });
       });
 
       it('should fail due to duplicate credentials', function(done){
-        var _this = this;
-        var user = new User(_this.data);
+        var data = {
+          username: 'bob',
+          password: 'password123'
+        };
+
+        var user = new User(data);
+
         user.save(function(err, user){
           if(err) return done(err);
           req.post('/signup')
-            .send(_this.data)
+            .send(data)
             .expect(500)
             .end(function(err, res){
               if(err) return done(err);
               res.body.success.should.equal(false);
-              res.body.message.should.equal('Duplicate found.');
+              res.body.errors.messages.should.containEql('Duplicate found.');
               done();
             });
         });
       });
 
       it('should fail due to missing username attribute', function(done){
-        var data = this.data;
-        data.username = "";
+        var data = {
+          username: '',
+          password: 'password123'
+        };
         req.post('/signup')
-          .send(this.data)
+          .send(data)
           .expect(500)
           .end(function(err, res){
             if(err) return done(err);
             res.body.success.should.equal(false);
-            res.body.message.should.match(/Path `username` is required./);
+            res.body.errors.messages.should.match(/Path `username` is required./);
+            res.body.errors.messages.should.not.match(/Path `password` is required./)
             done();
           });
       });
 
       it('should fail due to missing password attribute', function(done){
-        var data = this.data;
-        data.password = "";
+        var data = {
+          username: 'bob',
+          password: ''
+        };
         req.post('/signup')
-          .send(this.data)
+          .send(data)
           .expect(500)
           .end(function(err, res){
             if(err) return done(err);
             res.body.success.should.equal(false);
-            res.body.message.should.match(/Path `password` is required./);
+            res.body.errors.messages.should.match(/Path `password` is required./);
+            res.body.errors.messages.should.not.match(/Path `username` is required./);
             done();
           });
       });
 
+      it('should fail due to missing credentials', function(done){
+        var data = {
+          username: '',
+          password: ''
+        };
+        req.post('/signup')
+          .send(data)
+          .expect(500)
+          .end(function(err, res){
+            if(err) return done(err);
+              res.body.success.should.equal(false);
+              res.body.errors.messages.should.have.length(2);
+              res.body.errors.messages.should.containEql('Path `username` is required.');
+              res.body.errors.messages.should.containEql('Path `password` is required.');
+            done();
+          });
+      });
     });
 
     describe('Login', function(){
