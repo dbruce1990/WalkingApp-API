@@ -45,7 +45,7 @@ describe('Index', function(){
   });
 
   describe('Routes', function(){
-    describe.only('Signup', function(){
+    describe('Signup', function(){
 
       it('should successfuly signup a new user', function(done){
         var data = {
@@ -66,78 +66,80 @@ describe('Index', function(){
           });
       });
 
-      it('should fail due to duplicate credentials', function(done){
-        var data = {
-          username: 'bob',
-          password: 'password123'
-        };
+      describe('Errors', function(){
+        it('should fail due to duplicate credentials', function(done){
+          var data = {
+            username: 'bob',
+            password: 'password123'
+          };
 
-        var user = new User(data);
+          var user = new User(data);
 
-        user.save(function(err, user){
-          if(err) return done(err);
+          user.save(function(err, user){
+            if(err) return done(err);
+            req.post('/signup')
+              .send(data)
+              .expect(500)
+              .end(function(err, res){
+                if(err) return done(err);
+                res.body.success.should.equal(false);
+                res.body.errors.messages.should.containEql('Duplicate found.');
+                done();
+              });
+          });
+        });
+
+        it('should fail due to missing username attribute', function(done){
+          var data = {
+            username: '',
+            password: 'password123'
+          };
           req.post('/signup')
             .send(data)
             .expect(500)
             .end(function(err, res){
               if(err) return done(err);
               res.body.success.should.equal(false);
-              res.body.errors.messages.should.containEql('Duplicate found.');
+              res.body.errors.messages.should.containEql('Path `username` is required.');
+              res.body.errors.messages.should.not.containEql('Path `password` is required.');
               done();
             });
         });
-      });
 
-      it('should fail due to missing username attribute', function(done){
-        var data = {
-          username: '',
-          password: 'password123'
-        };
-        req.post('/signup')
-          .send(data)
-          .expect(500)
-          .end(function(err, res){
-            if(err) return done(err);
-            res.body.success.should.equal(false);
-            res.body.errors.messages.should.match(/Path `username` is required./);
-            res.body.errors.messages.should.not.match(/Path `password` is required./)
-            done();
-          });
-      });
-
-      it('should fail due to missing password attribute', function(done){
-        var data = {
-          username: 'bob',
-          password: ''
-        };
-        req.post('/signup')
-          .send(data)
-          .expect(500)
-          .end(function(err, res){
-            if(err) return done(err);
-            res.body.success.should.equal(false);
-            res.body.errors.messages.should.match(/Path `password` is required./);
-            res.body.errors.messages.should.not.match(/Path `username` is required./);
-            done();
-          });
-      });
-
-      it('should fail due to missing credentials', function(done){
-        var data = {
-          username: '',
-          password: ''
-        };
-        req.post('/signup')
-          .send(data)
-          .expect(500)
-          .end(function(err, res){
-            if(err) return done(err);
+        it('should fail due to missing password attribute', function(done){
+          var data = {
+            username: 'bob',
+            password: ''
+          };
+          req.post('/signup')
+            .send(data)
+            .expect(500)
+            .end(function(err, res){
+              if(err) return done(err);
               res.body.success.should.equal(false);
-              res.body.errors.messages.should.have.length(2);
-              res.body.errors.messages.should.containEql('Path `username` is required.');
               res.body.errors.messages.should.containEql('Path `password` is required.');
-            done();
-          });
+              res.body.errors.messages.should.not.containEql('Path `username` is required.');
+              done();
+            });
+        });
+
+        it('should fail due to missing credentials', function(done){
+          var data = {
+            username: '',
+            password: ''
+          };
+          req.post('/signup')
+            .send(data)
+            .expect(500)
+            .end(function(err, res){
+              if(err) return done(err);
+                res.body.success.should.equal(false);
+                res.body.errors.messages.should.have.length(3);
+                res.body.errors.messages.should.containEql('Path `username` is required.');
+                res.body.errors.messages.should.containEql('Path `password` is required.');
+              done();
+            });
+        });
       });
     });
 
@@ -156,13 +158,34 @@ describe('Index', function(){
         });
       });
 
-      it('should fail to login user due to invalid credentials', function(done){
+      it.only('should fail to login user due to invalid username', function(done){
+        var data = {
+          username: 'jane',
+          password: 'password'
+        };
         req.post('/login')
-          .send({
-            username: 'bob',
-            password: 'wrongPass'
-          })
-          .expect(401, done);
+          .send(data)
+          .expect(401)
+          .end(function(err, res){
+            if(err) return done(err);
+            res.text.should.match(/Unauthorized/);
+            done();
+          });
+      });
+
+      it('should fail to login user due to invalid password', function(done){
+        var data = {
+          username: 'bob',
+          password: 'wrongPass'
+        };
+        req.post('/login')
+          .send(data)
+          .expect(401)
+          .end(function(err, res){
+            if(err) return done(err);
+            res.text.should.match(/Unauthorized/);
+            done();
+          });
       });
 
       it('should login user', function(done){
@@ -171,6 +194,7 @@ describe('Index', function(){
           .send(_this.data)
           .expect(200)
           .end(function(err, res){
+            res.body.user.should.not.be.null();
             res.body.user.username.should.equal(_this.user.username);
             res.body.user.password.should.equal(_this.user.password);
             done();

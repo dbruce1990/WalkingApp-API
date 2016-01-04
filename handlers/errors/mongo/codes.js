@@ -1,10 +1,11 @@
-module.exports = function(){
+module.exports = function(err, messages){
   switch(err.code){
     case 11000:
-      response.errors.messages.push('Duplicate found.');
+      messages.push('Duplicate found.');
       break;
     default:
-      response.errors.messages.push(defaultMessage);
+      messages.push(defaultMessage);
       break;
   }
+  return messages;
 };
