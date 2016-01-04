@@ -160,7 +160,7 @@ describe('Index', function(){
 
       it('should fail due to invalid username', function(done){
         var data = {
-          username: 'jane',
+          username: 'robert',
           password: 'password'
         };
         req.post('/login')
@@ -194,9 +194,11 @@ describe('Index', function(){
           .send(_this.data)
           .expect(200)
           .end(function(err, res){
-            res.body.user.should.not.be.null();
-            res.body.user.username.should.equal(_this.user.username);
-            res.body.user.password.should.equal(_this.user.password);
+            res.body.user.should.not.be.null();     
+            res.body.user.username
+              .should.equal(_this.user.username);
+            res.body.user.password
+              .should.equal(_this.user.password);
             done();
           });
       });
