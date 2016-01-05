@@ -15,7 +15,11 @@ var User = new Schema({
   password: {
     type: String,
     required: true
-  }
+  },
+  walks: [{
+    type: Schema.ObjectId,
+    ref: 'Walk',
+  }]
 });
 
 var updatePassword = function(doc){

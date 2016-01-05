@@ -8,18 +8,32 @@ var Walk = new Schema({
   description: String,
   elapsedTime: Number,
   distance: Number,
-  waypoints: Array
+  waypoints: Array,
+  _user: {
+    type: Schema.ObjectId,
+    ref: 'User',
+    required: true
+  }
 });
 
 Walk.pre('save', function(next){
   var now = new Date();
-
-  this.updatedAt = now;
-
+  this.updated_at = now;
   if(!this.created_at)
     this.created_at = now;
-
   next();
+});
+
+Walk.pre('update', function(next){
+  this.updated_at = new Date();
+});
+
+Walk.pre('findOneAndUpdate', function(next){
+  this.updated_at = new Date();
+});
+
+Walk.pre('findByIdAndUpdate', function(next){
+  this.updated_at = new Date();
 });
 
 module.exports = mongoose.model('Walk', Walk);

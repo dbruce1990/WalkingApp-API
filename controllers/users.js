@@ -20,9 +20,9 @@ controller.update = function(req, res){
   User.findOneAndUpdate(query, updateData, options,function(err, user){
     if(err) return handleError(res, err);
     if(user)
-      res.send({success: true, user: user});
+      res.send({ success: true, user: user });
     else {
-      res.send({success: false, user: user });
+      res.send({ success: false, user: user });
     }
   });
 };

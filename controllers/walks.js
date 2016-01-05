@@ -3,19 +3,26 @@ var handleError = require('../handlers/error');
 var controller = {};
 
 controller.getAll = function(req, res){
-  Walk.find().sort({createdAt: -1}).exec(function(err, walks){
-    if(err) return handleError(res, err);
-    return res.send(walks);
-  });
+  Walk.find()
+    .where({_user: req.user._id})
+    .sort({createdAt: -1})
+    .exec(function(err, walks){
+      if(err) return handleError(res, err);
+      return res.send({ walks: walks });
+    });
 };
 
 controller.getById = function(req, res){
-  console.log(req.params);
-  Walk.findById(req.params._id, function(err, walk){
-    if(err) return handleError(res, err);
-    console.log(walk);
-    return res.send(walk).status(200);
-  });
+  var query = {
+    _id: req.params._id,
+    _user: req.user._id
+  };
+  Walk.findOne()
+    .where(query)
+    .exec(function(err, walk){
+      if(err) return handleError(res, err);
+      return res.send({ success: true, walk: walk });
+    });
 };
 
 controller.create = function (req, res, next) {
@@ -25,10 +32,11 @@ controller.create = function (req, res, next) {
   walk.elapsedTime = req.body.elapsedTime;
   walk.distance = req.body.distance;
   walk.waypoints = req.body.waypoints;
+  walk._user = req.user._id;
 
   walk.save(function(err, walk){
     if(err) return handleError(res, err);
-    return res.send(walk).status(200);
+    return res.send({ success: true, walk: walk });
   });
 };
 
@@ -44,7 +52,7 @@ controller.update =  function(req, res, next){
     walk.save(function(err, walk){
       if(err) return handleError(res, err);
       console.log(walk);
-      return res.send(walk).status(200);
+      return res.send({ success: true, walk: walk });
     });
   });
 };
@@ -52,7 +60,7 @@ controller.update =  function(req, res, next){
 controller.delete = function(req,res,next){
   Walk.findByIdAndRemove(req.params._id, function(err){
     if(err) return handleError(res, err);
-    return res.sendStatus(200);
+    return res.send({ success: true });
   });
 };
 
