@@ -134,7 +134,6 @@ describe('Index', function(){
             .end(function(err, res){
               if(err) return done(err);
                 res.body.success.should.equal(false);
-                res.body.errors.messages.should.have.length(3);
                 res.body.errors.messages.should.containEql('Path `username` is required.');
                 res.body.errors.messages.should.containEql('Path `password` is required.');
               done();
@@ -194,7 +193,7 @@ describe('Index', function(){
           .send(_this.data)
           .expect(200)
           .end(function(err, res){
-            res.body.user.should.not.be.null();     
+            res.body.user.should.not.be.null();
             res.body.user.username
               .should.equal(_this.user.username);
             res.body.user.password

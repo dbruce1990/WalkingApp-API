@@ -8,13 +8,23 @@ module.exports = function(res, err){
     messages.push('Something appears to have gone wrong.');
   };
 
-  if(typeof err.code !== 'undefined')
+  if(typeof err.code !== 'undefined'){
     messages = errorCodes(err, messages);
-  else if(err.message == "User validation failed")
-    messages = userValidationErrors(err, messages);
-  else
+  }
+  else if(err.name == 'ValidationError')
+  //  if(err.message == "User validation failed"){
+  //     console.log(err);
+  //     messages = userValidationErrors(err, messages);
+  //   }
+  //   else{
+      for(var error in err.errors){
+        var message = err.errors[error].message;
+        messages.push(message);
+      }
+    // }
+  else{
     defaultMessage();
-
+  }
   var response = {
     success: false,
     errors:{
