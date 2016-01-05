@@ -10,13 +10,16 @@ controller.getAll = function(req, res){
 };
 
 controller.update = function(req, res){
+  var query = { _id: req.user._id };
   var updateData = { $set: req.body };
 
-  User.findByIdAndUpdate(req.user._id, updateData, function(err, user){
+  User.findOneAndUpdate(query, updateData, {new: true},function(err, user){
     if(err) return handleError(res, err);
-    console.log('user: ');
-    console.log(user);
-    res.send({success: true, user: user});
+    if(user)
+      res.send({success: true, user: user});
+    else {
+      res.send({success: false, user: user });
+    }
   });
 };
 

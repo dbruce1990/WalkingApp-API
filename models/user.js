@@ -3,7 +3,9 @@ var Schema = mongoose.Schema;
 var bcrypt = require('bcryptjs');
 
 var User = new Schema({
-  id: Schema.ObjectId,
+  id: {
+    type: Schema.ObjectId
+  },
   createdAt: Number,
   username: {
     type: String,
@@ -16,17 +18,25 @@ var User = new Schema({
   }
 });
 
-User.methods.generateHash = function(pass){
-  return bcrypt.hashSync(pass, bcrypt.genSaltSync(10));
+User.methods.generateHash = function(){
+  this.password = bcrypt.hashSync(this.password, bcrypt.genSaltSync(10));
 }
-User.methods.validatePassword = function(pass){
-  return bcrypt.compareSync(pass, this.password);
+User.methods.validatePassword = function(password){
+  var result = bcrypt.compareSync(password, this.password);
+  return result;
 }
 
 User.pre('save', function(next){
-  if(this.isModified('password'))
-    this.password = this.generateHash(this.password);
-
+  if(this.isModified)
+    this.generateHash();
   next();
 });
+
+User.pre('findOneAndUpdate', function(next){
+    if(typeof this._update.$set.password !== 'undefined'){
+      this._update.$set.password = bcrypt.hashSync(this._update.$set.password, bcrypt.genSaltSync(10));
+    }
+  next();
+});
+
 module.exports = mongoose.model('User', User);
