@@ -12,8 +12,12 @@ controller.getAll = function(req, res){
 controller.update = function(req, res){
   var query = { _id: req.user._id };
   var updateData = { $set: req.body };
+  var options = {
+    new: true,
+    runValidators: true
+  };
 
-  User.findOneAndUpdate(query, updateData, {new: true},function(err, user){
+  User.findOneAndUpdate(query, updateData, options,function(err, user){
     if(err) return handleError(res, err);
     if(user)
       res.send({success: true, user: user});

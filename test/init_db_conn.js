@@ -8,8 +8,6 @@ var mongoose = require('mongoose');
 process.env.NODE_ENV = 'test';
 
 beforeEach(function(done){
-  this.timeout(5000);
-
   var clearDB = function(){
     for(var i in mongoose.connection.collections){
       // console.log(i);
