@@ -1,6 +1,5 @@
 module.exports = function(res, err){
   var errorCodes = require('./errors/mongo/codes');
-  var userValidationErrors = require('./errors/mongoose/validation/user');
 
   var messages = [];
 
