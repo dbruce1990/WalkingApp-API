@@ -6,7 +6,7 @@ var req = require('supertest').agent(app);
 
 describe('Users', function(){
   describe('Routes', function(){
-    describe.only('Authenticated', function(){
+    describe('Authenticated', function(){
       beforeEach(function(done){
         var _this = this;
         var data = {

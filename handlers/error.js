@@ -12,16 +12,10 @@ module.exports = function(res, err){
     messages = errorCodes(err, messages);
   }
   else if(err.name == 'ValidationError')
-  //  if(err.message == "User validation failed"){
-  //     console.log(err);
-  //     messages = userValidationErrors(err, messages);
-  //   }
-  //   else{
       for(var error in err.errors){
         var message = err.errors[error].message;
         messages.push(message);
       }
-    // }
   else{
     defaultMessage();
   }
