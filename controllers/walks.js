@@ -26,13 +26,14 @@ controller.getById = function(req, res){
 };
 
 controller.create = function (req, res, next) {
-  var walk = new Walk();
-  walk.description = req.body.description;
-  walk.createdAt = req.body.createdAt;
-  walk.elapsedTime = req.body.elapsedTime;
-  walk.distance = req.body.distance;
-  walk.waypoints = req.body.waypoints;
-  walk._user = req.user._id;
+  console.log(walk);
+  var walk = new Walk({
+    description: req.body.description,
+    elapsedTime: req.body.elapsedTime,
+    distance: req.body.distance,
+    waypoints: req.body.waypoints,
+    _user: req.user._id
+  });
 
   walk.save(function(err, walk){
     if(err) return handleError(res, err);
@@ -40,7 +41,7 @@ controller.create = function (req, res, next) {
   });
 };
 
-controller.update =  function(req, res, next){
+controller.update = function(req, res, next){
   Walk.findById(req.body._id, function(err, walk){
     if(err) return handleError(res, err);
     walk.description = req.body.description;

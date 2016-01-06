@@ -15,16 +15,12 @@ var LatLng = new Schema({
   longitude: {
     type: Number,
     required: true
-  },
-  _walk: {
-    type: Schema.ObjectId,
-    ref: 'Walk',
-    required: true
   }
 });
 LatLng.pre('save', function(next){
   if(!this.created_at)
     this.created_at = new Date();
+  next();
 });
 
 var Walk = new Schema({

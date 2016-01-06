@@ -28,34 +28,50 @@ describe('Walks', function(){
 
             _this.user = user;
 
+
             req.post('/login')
             .send(userData)
             .end(function(err, res){
               if(err) done(err);
               //create temporary models
-              var walk1 = new Walk();
-              walk1.description = 'description1';
-              walk1.elapsedTime = 10000;
-              walk1.distance = 5000;
-              walk1.waypoints = {};
-              walk1._user = res.body.user._id;
+              var walk1 = new Walk({
+                description: 'description1',
+                elapsedTime: 10000,
+                distance: 5000,
+                _user: res.body.user._id,
+                waypoints: [
+                  {"accuracy":11, "latitude":44.06523257, "longitude":-123.06101363},
+                  {"accuracy":12, "latitude":44.06525829, "longitude":-123.06100709},
+                  {"accuracy":11, "latitude":44.06523424, "longitude":-123.06099261},
+                  {"accuracy":11, "latitude":44.0652201, "longitude":-123.06097669}
+                ]
+              });
 
-              var walk2 = new Walk();
-              walk2.description = 'description1';
-              walk2.elapsedTime = 10000;
-              walk2.distance = 5000;
-              walk2.waypoints = {};
-              walk2._user = res.body.user._id;
+              var walk2 = new Walk({
+                description: 'description1',
+                elapsedTime: 10000,
+                distance: 5000,
+                _user: res.body.user._id,
+                waypoints: [
+                  {"accuracy":11, "latitude":44.06523424, "longitude":-123.06099261},
+                  {"accuracy":11, "latitude":44.0652201, "longitude":-123.06097669},
+                  {"accuracy":11, "latitude":44.06521917,"longitude":-123.06098176}
+                ]
+              });
 
+              var walk3 = new Walk({
+                description: 'description1',
+                elapsedTime: 10000,
+                distance: 5000,
+                _user: res.body.user._id,
+                waypoints: [
+                  {"accuracy":6, "latitude":44.06528592, "longitude":-123.06087405},
+                  {"accuracy":4, "latitude":44.06528038, "longitude":-123.06088851},
+                  {"accuracy":4, "latitude":44.06528185, "longitude":-123.06088036}
+                ]
+              });
 
-              var walk3 = new Walk();
-              walk3.description = 'description1';
-              walk3.elapsedTime = 10000;
-              walk3.distance = 5000;
-              walk3.waypoints = {};
-              walk3._user = res.body.user._id;
-
-
+              //save temporary models
               walk1.save(function(err, walk){
                 if(err) return done(err);
                 _this.walk1 = walk1;
@@ -71,6 +87,7 @@ describe('Walks', function(){
                   });
                 });
               });
+
             });
           });
         });
@@ -78,7 +95,8 @@ describe('Walks', function(){
         it('should return all walks related to user', function(done){
           req.post('/login')
           .send(userData)
-          .then(function(res){
+          .end(function(err, res){
+            if(err) return done(err);
             req.get('/walks')
             .expect(200)
             .end(function(err, res){
@@ -93,7 +111,8 @@ describe('Walks', function(){
           var _this = this;
           req.post('/login')
           .send(userData)
-          .then(function(res){
+          .end(function(err, res){
+            if(err) return done(err);
             req.get('/walks/' + _this.walk1._id)
             .expect(200)
             .end(function(err, res){
@@ -105,43 +124,57 @@ describe('Walks', function(){
           });
         });
 
-        it.only('should create a new Walk', function(done){
+        it('should create a new walk', function(done){
           var _this = this;
           var walk = {
             description: "this is a description",
             elapsedTime: 100000,
             distance: 5000,
-            waypoints:
-              [{"accuracy":11,
-                "latlng":{"latitude":44.06523257,
-                "longitude":-123.06101363}
+            waypoints: [
+              {"accuracy":11,
+                "latitude":44.06523257,
+                "longitude":-123.06101363
+              },
+              {
+                "accuracy": 12,
+                "latitude": 44.06525829,
+                "longitude": -123.06100709,
+              },
+              {
+                "accuracy": 21,
+                "latitude":44.06521917,
+                "longitude":-123.06098176
               }
-
+            ]
           };
-
-          _this.query = { description: walk.description};
           _this.walk = walk;
 
           req.post('/login')
           .send(userData)
-          .then(function(res){
+          .end(function(err, res){
+            if(err) return done(err);
             req.post('/walks')
-            .send(_this.walk)
+            .send(walk)
             .expect(200)
             .end(function(err, res){
               if(err) return done(err);
-              res.body.success.should.equal(true);
-              Walk.findOne(_this.query, function(err, walk){
+
+              var query = { _id: res.body.walk._id };
+              Walk.findOne(query, function(err, walk){
                 if(err) return done(err);
+
+                res.body.success.should.equal(true);
                 walk.should.not.be.null();
                 walk.description.should.match(_this.walk.description);
                 walk.elapsedTime.should.equal(_this.walk.elapsedTime);
                 walk.distance.should.equal(_this.walk.distance);
                 walk.waypoints.should.be.type('object');
+
                 done();
               });
             });
           });
+
         });
 
       });
