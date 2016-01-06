@@ -11,6 +11,17 @@ var userData = {
   password: 'password123'
 };
 
+var walk = {
+  description: "this is a description",
+  elapsedTime: 100000,
+  distance: 5000,
+  waypoints: [
+    {"accuracy":11, "latitude":44.06523257, "longitude":-123.06101363},
+    {"accuracy": 12, "latitude": 44.06525829,"longitude": -123.06100709},
+    {"accuracy": 21, "latitude":44.06521917, "longitude":-123.06098176}
+  ]
+};
+
 describe('Walks', function(){
   describe('Routes', function(){
     describe('Authenticated', function(){
@@ -126,18 +137,6 @@ describe('Walks', function(){
 
         it('should create a new walk', function(done){
           var _this = this;
-          var walk = {
-            description: "this is a description",
-            elapsedTime: 100000,
-            distance: 5000,
-            waypoints: [
-              {"accuracy":11, "latitude":44.06523257, "longitude":-123.06101363},
-              {"accuracy": 12, "latitude": 44.06525829,"longitude": -123.06100709},
-              {"accuracy": 21, "latitude":44.06521917, "longitude":-123.06098176}
-            ]
-          };
-          _this.walk = walk;
-
           req.post('/login')
           .send(userData)
           .end(function(err, res){
@@ -152,9 +151,9 @@ describe('Walks', function(){
                 if(err) return done(err);
                 res.body.success.should.equal(true);
                 walk.should.not.be.null();
-                walk.description.should.match(_this.walk.description);
-                walk.elapsedTime.should.equal(_this.walk.elapsedTime);
-                walk.distance.should.equal(_this.walk.distance);
+                walk.description.should.match(walk.description);
+                walk.elapsedTime.should.equal(walk.elapsedTime);
+                walk.distance.should.equal(walk.distance);
                 walk.waypoints.should.be.type('object');
                 done();
               });
@@ -162,7 +161,7 @@ describe('Walks', function(){
           });
         });
 
-        it.only('should update the description of a walk', function(done){
+        it('should update the description of a walk', function(done){
           var _this = this;
 
           req.post('/login')
@@ -178,6 +177,7 @@ describe('Walks', function(){
                   var newDescription = {description: 'This is a new description.'};
                   req.put('/walks/' + id)
                     .send(newDescription)
+                    .expect(200)
                     .end(function(err, res){
                       if(err) return done(err);
                       res.body.success.should.equal(true);
@@ -185,6 +185,31 @@ describe('Walks', function(){
                       done();
                     });
                 });
+            });
+        });
+
+        it('should delete walk from database', function(done){
+          req.post('/login')
+            .send(userData)
+            .end(function(err, res){
+              if(err) return done(err);
+
+              req.post('/walks')
+                .send(walk)
+                .end(function(err, res){
+                  if(err) return done(err);
+
+                  req.delete('/walks/' + res.body.walk._id)
+                    .expect(200)
+                    .end(function(err, res){
+                      Walk.findOne({_id: walk._id}, function(err, walk){
+                        if(err) return done(err);
+                        res.body.success.should.equal(true);
+                        expect(walk).to.not.exist;
+                        done();
+                      });
+                    });
+              });
             });
         });
 
@@ -260,6 +285,7 @@ describe('Walks', function(){
           done();
         });
       });
+
     });
   });
 });
