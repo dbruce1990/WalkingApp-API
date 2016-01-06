@@ -28,7 +28,9 @@ var passport = require('./config/passport')(app);
 //loads all routes
 require('./config/routes')(app);
 
+
 // catch 404 and forward to error handler
+/* istanbul ignore next */
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
   err.status = 404;
@@ -41,6 +43,7 @@ mongoose.connect(db[app.get('env')]);
 
 // development error handler
 // will print stacktrace
+/* istanbul ignore next */
 if (app.get('env') === 'development') {
 
   app.use(function(err, req, res, next) {
@@ -52,8 +55,8 @@ if (app.get('env') === 'development') {
   });
 }
 
+/* istanbul ignore next */
 if(app.get('env') === 'production'){
-
   // production error handler
   // no stacktraces leaked to user
   app.use(function(err, req, res, next) {

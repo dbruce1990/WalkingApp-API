@@ -3,6 +3,7 @@ module.exports = function(err, messages){
     case 11000:
       messages.push('Duplicate found.');
       break;
+      /* istanbul ignore next*/
     default:
       messages.push(defaultMessage);
       break;
