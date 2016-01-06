@@ -2,6 +2,9 @@ module.exports = function(app){
   var passport = require ('passport');
   var LocalStrategy = require('passport-local').Strategy;
   var session = require('express-session');
+  var MongoStore = require('connect-mongo')(session);
+  var mongoose = require('mongoose');
+
   var User = require('../models/user.js');
   // =========================================================================
   // passport session setup ==================================================
@@ -37,7 +40,10 @@ module.exports = function(app){
 
 //setup express-session
 app.use(session({
-  secret: "secret",
+  secret: "This has to be the most secure secret ever!",
+  store: new MongoStore({
+    mongooseConnection: mongoose.connection
+  }),
   saveUninitialized: true,
   resave: true
 }));
