@@ -30,6 +30,7 @@ module.exports = function(app){
     User.findOne({username: username}, function(err, user){
       if(err) return done(err);
       if(!user || !user.validatePassword(password)) return done(null, false);
+
       return done(null, user);
     });
   }));

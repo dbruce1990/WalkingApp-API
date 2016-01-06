@@ -131,20 +131,9 @@ describe('Walks', function(){
             elapsedTime: 100000,
             distance: 5000,
             waypoints: [
-              {"accuracy":11,
-                "latitude":44.06523257,
-                "longitude":-123.06101363
-              },
-              {
-                "accuracy": 12,
-                "latitude": 44.06525829,
-                "longitude": -123.06100709,
-              },
-              {
-                "accuracy": 21,
-                "latitude":44.06521917,
-                "longitude":-123.06098176
-              }
+              {"accuracy":11, "latitude":44.06523257, "longitude":-123.06101363},
+              {"accuracy": 12, "latitude": 44.06525829,"longitude": -123.06100709},
+              {"accuracy": 21, "latitude":44.06521917, "longitude":-123.06098176}
             ]
           };
           _this.walk = walk;
@@ -158,23 +147,45 @@ describe('Walks', function(){
             .expect(200)
             .end(function(err, res){
               if(err) return done(err);
-
               var query = { _id: res.body.walk._id };
               Walk.findOne(query, function(err, walk){
                 if(err) return done(err);
-
                 res.body.success.should.equal(true);
                 walk.should.not.be.null();
                 walk.description.should.match(_this.walk.description);
                 walk.elapsedTime.should.equal(_this.walk.elapsedTime);
                 walk.distance.should.equal(_this.walk.distance);
                 walk.waypoints.should.be.type('object');
-
                 done();
               });
             });
           });
+        });
 
+        it.only('should update the description of a walk', function(done){
+          var _this = this;
+
+          req.post('/login')
+            .send(userData)
+            .end(function(err, res){
+              if(err) return done(err);
+              req.get('/walks')
+                .end(function(err, res){
+                  if(err) return done(err);
+                  var walk = res.body.walks[0];
+                  var id = walk._id;
+
+                  var newDescription = {description: 'This is a new description.'};
+                  req.put('/walks/' + id)
+                    .send(newDescription)
+                    .end(function(err, res){
+                      if(err) return done(err);
+                      res.body.success.should.equal(true);
+                      res.body.walk.description.should.match(/This is a new description./);
+                      done();
+                    });
+                });
+            });
         });
 
       });

@@ -42,19 +42,15 @@ controller.create = function (req, res, next) {
 };
 
 controller.update = function(req, res, next){
-  Walk.findById(req.body._id, function(err, walk){
+  var id = req.params._id;
+  var query = req.body;
+  var options = {
+    new: true,
+    runValidators: true
+  };
+  Walk.findByIdAndUpdate(id, query, options, function(err, walk){
     if(err) return handleError(res, err);
-    walk.description = req.body.description;
-    walk.createdAt = req.body.createdAt;
-    walk.elapsedTime = req.body.elapsedTime;
-    walk.distance = req.body.distance;
-    walk.waypoints = req.body.waypoints;
-
-    walk.save(function(err, walk){
-      if(err) return handleError(res, err);
-      console.log(walk);
-      return res.send({ success: true, walk: walk });
-    });
+    return res.send({ success: true, walk: walk });
   });
 };
 

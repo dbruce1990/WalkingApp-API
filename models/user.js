@@ -18,7 +18,7 @@ var User = new Schema({
   },
   walks: [{
     type: Schema.ObjectId,
-    ref: 'Walk',
+    ref: 'Walk'
   }]
 });
 
