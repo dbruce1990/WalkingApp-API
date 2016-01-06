@@ -34,7 +34,10 @@ module.exports = function(app){
       if(err) return done(err);
       if(!user || !user.validatePassword(password)) return done(null, false);
 
-      return done(null, user);
+      var userSafe = user;
+      delete user.password;
+
+      return done(null, userSafe);
     });
   }));
 
