@@ -48,14 +48,17 @@ Walk.pre('save', function(next){
 
 Walk.pre('update', function(next){
   this.updated_at = new Date();
+  next();
 });
 
 Walk.pre('findOneAndUpdate', function(next){
   this.updated_at = new Date();
+  next();
 });
 
 Walk.pre('findByIdAndUpdate', function(next){
   this.updated_at = new Date();
+  next();
 });
 
 module.exports = mongoose.model('Walk', Walk);
