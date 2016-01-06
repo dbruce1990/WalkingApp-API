@@ -2,7 +2,6 @@ module.exports = function(app){
   var passport = require ('passport');
   var LocalStrategy = require('passport-local').Strategy;
   var session = require('express-session');
-  var MongoStore = require('connect-mongo')(session);
   var mongoose = require('mongoose');
 
   var User = require('../models/user.js');
@@ -34,22 +33,34 @@ module.exports = function(app){
       if(err) return done(err);
       if(!user || !user.validatePassword(password)) return done(null, false);
 
-      var userSafe = user;
-      delete user.password;
+      var userSafe = JSON.parse(JSON.stringify(user));
+      delete userSafe.password;
+      console.log('safe: ' + userSafe);
 
       return done(null, userSafe);
     });
   }));
 
 //setup express-session
-app.use(session({
-  secret: "This has to be the most secure secret ever!",
-  store: new MongoStore({
-    mongooseConnection: mongoose.connection
-  }),
-  saveUninitialized: true,
-  resave: true
-}));
+if(app.get('env') === 'production'){
+  var MongoStore = require('connect-mongo')(session);
+
+  app.use(session({
+    secret: "This has to be the most secure secret ever!",
+    store: new MongoStore({
+      mongooseConnection: mongoose.connection
+    }),
+    saveUninitialized: true,
+    resave: true
+  }));
+}else{
+  app.use(session({
+    secret: "This has to be the most secure secret ever!",
+    saveUninitialized: true,
+    resave: true
+  }));
+}
+
 
 app.use(passport.initialize());
 app.use(passport.session());
