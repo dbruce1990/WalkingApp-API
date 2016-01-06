@@ -1,6 +1,32 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
+var LatLng = new Schema({
+  id: Schema.ObjectId,
+  created_at: Date,
+  accuracy: {
+    type: Number,
+    required: true
+  },
+  latitude: {
+    type: Number,
+    required: true
+  },
+  longitude: {
+    type: Number,
+    required: true
+  },
+  _walk: {
+    type: Schema.ObjectId,
+    ref: 'Walk',
+    required: true
+  }
+});
+LatLng.pre('save', function(next){
+  if(!this.created_at)
+    this.created_at = new Date();
+});
+
 var Walk = new Schema({
   id: Schema.ObjectId,
   created_at: Date,
@@ -8,7 +34,7 @@ var Walk = new Schema({
   description: String,
   elapsedTime: Number,
   distance: Number,
-  waypoints: Array,
+  waypoints: [LatLng],
   _user: {
     type: Schema.ObjectId,
     ref: 'User',
