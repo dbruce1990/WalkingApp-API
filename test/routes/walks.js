@@ -14,20 +14,21 @@ var userData = {
 describe('Walks', function(){
   describe('Routes', function(){
     describe('Authenticated', function(){
-      beforeEach(function(done){
-        //TODO Need to find out how to test this without creating a user and logging in first...
-        //first need to create and login a user in, and create some walks
+      describe('Success', function(){
+        beforeEach(function(done){
+          //TODO Need to find out how to test this without creating a user and logging in first...
+          //first need to create and login a user in, and create some walks
 
-        var _this = this;
-        //create temporary user
-        var userData = { username: 'bob', password: 'password123' };
-        var user = new User(userData)
-        .save(function(err, user){
-          if(err) done(err);
+          var _this = this;
+          //create temporary user
+          var userData = { username: 'bob', password: 'password123' };
+          var user = new User(userData)
+          .save(function(err, user){
+            if(err) done(err);
 
-          _this.user = user;
+            _this.user = user;
 
-          req.post('/login')
+            req.post('/login')
             .send(userData)
             .end(function(err, res){
               if(err) done(err);
@@ -71,29 +72,29 @@ describe('Walks', function(){
                 });
               });
             });
+          });
         });
-    });
 
-    it('should return all walks related to user', function(done){
-      req.post('/login')
-        .send(userData)
-        .then(function(res){
-          req.get('/walks')
+        it('should return all walks related to user', function(done){
+          req.post('/login')
+          .send(userData)
+          .then(function(res){
+            req.get('/walks')
             .expect(200)
             .end(function(err, res){
               if(err) return done(err);
               res.body.walks.should.have.length(3);
               done();
             });
+          });
         });
-    });
 
-    it('should return a single walk by id', function(done){
-      var _this = this;
-      req.post('/login')
-        .send(userData)
-        .then(function(res){
-          req.get('/walks/' + _this.walk1._id)
+        it('should return a single walk by id', function(done){
+          var _this = this;
+          req.post('/login')
+          .send(userData)
+          .then(function(res){
+            req.get('/walks/' + _this.walk1._id)
             .expect(200)
             .end(function(err, res){
               if(err) return done(err);
@@ -101,10 +102,55 @@ describe('Walks', function(){
               res.body.walk._user.should.equal(_this.user._id.toString());
               done();
             });
+          });
         });
-    });
 
-  });
+        it.only('should create a new Walk', function(done){
+          var _this = this;
+          var walk = {
+            description: "this is a description",
+            elapsedTime: 100000,
+            distance: 5000,
+            waypoints:
+              [{"accuracy":11,
+                "latlng":{"latitude":44.06523257,
+                "longitude":-123.06101363}
+              }
+
+          };
+
+          _this.query = { description: walk.description};
+          _this.walk = walk;
+
+          req.post('/login')
+          .send(userData)
+          .then(function(res){
+            req.post('/walks')
+            .send(_this.walk)
+            .expect(200)
+            .end(function(err, res){
+              if(err) return done(err);
+              res.body.success.should.equal(true);
+              Walk.findOne(_this.query, function(err, walk){
+                if(err) return done(err);
+                walk.should.not.be.null();
+                walk.description.should.match(_this.walk.description);
+                walk.elapsedTime.should.equal(_this.walk.elapsedTime);
+                walk.distance.should.equal(_this.walk.distance);
+                walk.waypoints.should.be.type('object');
+                done();
+              });
+            });
+          });
+        });
+
+      });
+
+      describe('Error', function(){
+
+      });
+
+    });
 
     describe('Unauthorized', function(){
       it('should return 401', function(done){
@@ -119,12 +165,12 @@ describe('Walks', function(){
 
       it('should return 401', function(done){
         req.get('/walks/10987654321')
-          .expect(401)
-          .end(function(err, res){
-            if(err) return done(err);
-            res.text.should.match(/You must login first./);
-            done();
-          });
+        .expect(401)
+        .end(function(err, res){
+          if(err) return done(err);
+          res.text.should.match(/You must login first./);
+          done();
+        });
       });
 
       it('should return 401', function(done){
@@ -135,13 +181,13 @@ describe('Walks', function(){
         };
 
         req.post('/walks')
-          .send(data)
-          .expect(401)
-          .end(function(err, res){
-            if(err) return done(err);
-            res.text.should.match(/You must login first./);
-            done();
-          });
+        .send(data)
+        .expect(401)
+        .end(function(err, res){
+          if(err) return done(err);
+          res.text.should.match(/You must login first./);
+          done();
+        });
       });
 
       it('should return 401', function(done){
@@ -152,13 +198,13 @@ describe('Walks', function(){
           distance: 100000000
         };
         req.put('/walks')
-          .send(data)
-          .expect(401)
-          .end(function(err, res){
-            if(err) return done(err);
-            res.text.should.match(/You must login first./);
-            done();
-          });
+        .send(data)
+        .expect(401)
+        .end(function(err, res){
+          if(err) return done(err);
+          res.text.should.match(/You must login first./);
+          done();
+        });
       });
 
       it('should return 401', function(done){
