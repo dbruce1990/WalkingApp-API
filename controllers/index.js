@@ -28,7 +28,7 @@ controller.render_login = function(req, res){
 };
 
 controller.login = function(req, res){
-  return res.send({user: req.user });
+  return res.send({success: true, user: req.user });
 };
 
 module.exports = controller;
