@@ -39,4 +39,8 @@ controller.logout = function(req, res){
   return res.send({ success: false, message: 'You must login first.' });
 };
 
+controller.isLoggedIn = function (req, res) {
+  return res.send({ success: true });
+}
+
 module.exports = controller;
