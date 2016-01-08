@@ -40,7 +40,9 @@ controller.logout = function(req, res){
 };
 
 controller.isLoggedIn = function (req, res) {
-  return res.send({ success: true });
+  if(req.isAuthenticated())
+    return res.send({ success: true });
+  return res.send({ success: false });
 }
 
 module.exports = controller;

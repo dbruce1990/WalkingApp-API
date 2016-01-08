@@ -193,14 +193,7 @@ describe('Index', function(){
           });
       });
 
-      it.only('should verify that user is indeed logged in', function(done){
-        // var _this = this;
-        //
-        // var user = new User(userData);
-        //
-        // user.save(function(err, user){
-        //   if(err) return done(err);
-
+      it('should verify that user is indeed logged in', function(done){
           req.post('/login')
             .send(userData)
             .then(function(res){
@@ -212,7 +205,6 @@ describe('Index', function(){
                   done();
                 });
             });
-        // })
       });
     });
 
@@ -248,6 +240,17 @@ describe('Index', function(){
               });
           });
       });
+
+      it('should very user is not logged in', function(done){
+        req.get('/isLoggedIn')
+          .expect(200)
+          .end(function(err, res){
+            if(err) return done(err);
+            res.body.success.should.equal(false);
+            done();
+          });
+      });
+
     });
 
   });
