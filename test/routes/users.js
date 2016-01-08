@@ -110,7 +110,6 @@ describe('Users', function(){
         req.post('/login')
         .send(_this.data)
         .then(function(res){
-          console.log(res.body.user.password);
           req.put('/users/' + res.body.user._id)
           .send({
             username: 'robert',
@@ -118,7 +117,6 @@ describe('Users', function(){
           })
           .end(function(err, res){
             if(err) return done(err);
-            console.log(res.body);
             res.body.success.should.equal(false);
             res.body.errors.messages.should.containEql('Path `password` is required.');
             done();
