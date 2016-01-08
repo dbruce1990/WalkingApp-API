@@ -6,7 +6,7 @@ module.exports = function(app){
   var isAuthenticated = function(req, res, next){
     if(req.isAuthenticated())
       return next();
-    return res.status(401).send('You must login first.');
+    return res.status(401).send({ success: false, message: 'You must login first.'});
   };
 
   app.use('/', index);

@@ -35,7 +35,6 @@ module.exports = function(app){
 
       var userSafe = JSON.parse(JSON.stringify(user));
       delete userSafe.password;
-      console.log('safe: ' + userSafe);
 
       return done(null, userSafe);
     });
