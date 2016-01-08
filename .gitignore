@@ -40,7 +40,9 @@ coverage
 Procfile
 
 #comment this out when pushing to heroku
-config/database.js
+#config/database.js
 
 #uncomment this when pushing to heroku
-#test
+test
+
+deleteMe.txt
