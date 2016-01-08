@@ -26,7 +26,6 @@ controller.getById = function(req, res){
 };
 
 controller.create = function (req, res, next) {
-  console.log(walk);
   var walk = new Walk({
     description: req.body.description,
     elapsedTime: req.body.elapsedTime,

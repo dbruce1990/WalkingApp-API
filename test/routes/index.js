@@ -2,7 +2,12 @@ var db = require('../init_db_conn');
 var User = require('../../models/user');
 var app = require('../../app');
 var should = require('should');
-var req = require('supertest')(app);
+var req = require('supertest').agent(app);
+
+var userData = {
+  username: "bob",
+  password: "password123"
+};
 
 describe('Index', function(){
   describe('Views', function(){
@@ -48,19 +53,15 @@ describe('Index', function(){
     describe('Signup', function(){
 
       it('should successfuly signup a new user', function(done){
-        var data = {
-          username: 'bob',
-          password: 'password123'
-        };
         req.post('/signup')
-          .send(data)
+          .send(userData)
           .expect(200)
           .end(function(err, res){
             if(err) return done(err);
             User.findOne({_id: res.body.user._id}, function(err, user){
               if(err) return done(err);
               user.should.not.be.null();
-              user.username.should.equal(data.username);
+              user.username.should.equal(userData.username);
               done();
             });
           });
@@ -68,17 +69,12 @@ describe('Index', function(){
 
       describe('Errors', function(){
         it('should fail due to duplicate credentials', function(done){
-          var data = {
-            username: 'bob',
-            password: 'password123'
-          };
-
-          var user = new User(data);
+          var user = new User(userData);
 
           user.save(function(err, user){
             if(err) return done(err);
             req.post('/signup')
-              .send(data)
+              .send(userData)
               .expect(500)
               .end(function(err, res){
                 if(err) return done(err);
@@ -145,11 +141,8 @@ describe('Index', function(){
     describe('Login', function(){
       beforeEach(function(done){
         var _this = this;
-        _this.data = {
-          username: "bob",
-          password: "password123"
-        };
-        var user = new User(_this.data);
+        var user = new User(userData);
+
         user.save(function(err, user){
           if(err) return done(err);
           _this.user = user;
@@ -160,7 +153,7 @@ describe('Index', function(){
       it('should fail due to invalid username', function(done){
         var data = {
           username: 'robert',
-          password: 'password'
+          password: 'password123'
         };
         req.post('/login')
           .send(data)
@@ -190,17 +183,74 @@ describe('Index', function(){
       it('should login user', function(done){
         var _this = this;
         req.post('/login')
-          .send(_this.data)
+          .send(userData)
           .expect(200)
           .end(function(err, res){
             res.body.user.should.not.be.null();
-            res.body.user.username
-              .should.equal(_this.user.username);
-            res.body.user.password
-              .should.equal(_this.user.password);
+            res.body.success.should.equal(true);
+            res.body.user.username.should.equal(_this.user.username);
             done();
           });
       });
+
+      it('should verify that user is indeed logged in', function(done){
+          req.post('/login')
+            .send(userData)
+            .then(function(res){
+              req.get('/isLoggedIn')
+                .expect(200)
+                .end(function(err, res){
+                  if(err) return done(err);
+                  res.body.success.should.equal(true);
+                  done();
+                });
+            });
+      });
+    });
+
+    describe('Logout', function(){
+      it('should successfuly log a user out of the session', function(done){
+        var _this = this;
+
+        var user = new User(userData);
+
+        user.save(function(err, user){
+          if(err) return done(err);
+          _this.user = user;
+        });
+
+        req.post('/login')
+          .send(userData)
+          .end(function(err, res){
+            if(err) return done(err);
+            req.get('/logout')
+              .expect(200)
+              .end(function(err, res){
+                if(err) return done(err);
+                res.body.success.should.equal(true);
+                res.body.message.should.match(/Successfuly logged out./);
+                req.get('/walks')
+                  .expect(401)
+                  .end(function(err, res){
+                    if(err) return done(err);
+                    res.body.success.should.equal(false);
+                    res.body.message.should.match(/You must login first./);
+                    done();
+                  });
+              });
+          });
+      });
+
+      it('should very user is not logged in', function(done){
+        req.get('/isLoggedIn')
+          .expect(200)
+          .end(function(err, res){
+            if(err) return done(err);
+            res.body.success.should.equal(false);
+            done();
+          });
+      });
+
     });
 
   });
